@@ -12,9 +12,10 @@ public:
   void set_float(const std::string &name, float value) const;
 
 private:
-  const char *read_file(const char *path);
-  unsigned int compile_shader(const char *source, unsigned int type);
+  std::string read_file(const char *path);
+  unsigned int compile_shader(const std::string source, unsigned int type);
   unsigned int create_program(unsigned int vertexShader, unsigned int fragmentShader);
 
   unsigned int mID;
 };
+

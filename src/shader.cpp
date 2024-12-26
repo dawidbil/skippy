@@ -1,15 +1,17 @@
 #include "skippy/shader.h"
 
+#include <fstream>
+#include <sstream>
+#include <string>
 #include <iostream>
 
 #include <glad/glad.h>
 
 #include <GLFW/glfw3.h>
 
-
 Shader::Shader(const char *vertexShaderPath, const char *fragmentShaderPath) {
-  const char *vertexShaderSource = read_file(vertexShaderPath);
-  const char *fragmentShaderSource = read_file(fragmentShaderPath);
+  const auto vertexShaderSource = read_file(vertexShaderPath);
+  const auto fragmentShaderSource = read_file(fragmentShaderPath);
 
   unsigned int vertexShader = compile_shader(vertexShaderSource, GL_VERTEX_SHADER);
   unsigned int fragmentShader = compile_shader(fragmentShaderSource, GL_FRAGMENT_SHADER);
@@ -29,38 +31,41 @@ void Shader::set_float(const std::string &name, float value) const {
   glUniform1f(glGetUniformLocation(mID, name.c_str()), value);
 }
 
-const char *Shader::read_file(const char *path) {
-  FILE *file = fopen(path, "r");
-  if (!file) {
-    std::cerr << "Failed to open file: " << path << std::endl;
-    return nullptr;
+std::string Shader::read_file(const char *path) {
+  std::string file_content;
+  std::ifstream file_stream;
+  file_stream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+  try {
+    file_stream.open(path);
+    std::stringstream file_stream_buffer;
+    file_stream_buffer << file_stream.rdbuf();
+    file_stream.close();
+    file_content = file_stream_buffer.str();
+  } catch (std::ifstream::failure &e) {
+    std::cerr << "Failed to read file: " << path << std::endl;
   }
-
-  fseek(file, 0, SEEK_END);
-  long length = ftell(file);
-  fseek(file, 0, SEEK_SET);
-
-  char *buffer = new char[length + 1];
-  fread(buffer, 1, length, file);
-  buffer[length] = '\0';
-
-  fclose(file);
-
-  return buffer;
+  return file_content;
 }
 
-unsigned int Shader::compile_shader(const char *source, unsigned int type) {
+unsigned int Shader::compile_shader(const std::string source, unsigned int type) {
+  const char *c_source = source.c_str();
+  std::cout << c_source << std::endl;
   unsigned int shader = glCreateShader(type);
-  glShaderSource(shader, 1, &source, NULL);
+  std::cout << "Shader compiled successfully" << std::endl;
+  glShaderSource(shader, 1, &c_source, NULL);
+  std::cout << "Shader compiled successfully" << std::endl;
   glCompileShader(shader);
+  std::cout << "Shader compiled successfully" << std::endl;
 
   int success;
   char infoLog[512];
   glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+  std::cout << "Shader compiled successfully" << std::endl;
   if (!success) {
     glGetShaderInfoLog(shader, 512, NULL, infoLog);
     std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
   }
+  std::cout << "Shader compiled successfully" << std::endl;
 
   return shader;
 }
