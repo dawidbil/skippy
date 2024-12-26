@@ -3,12 +3,22 @@ project(skippy VERSION 1.0)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_executable(skippy main.cpp glad.c)
-target_include_directories(skippy PRIVATE
-	"${PROJECT_SOURCE_DIR}/include"
+add_library(
+	skippy_lib STATIC
+	src/glad.c
 )
 
+target_include_directories(skippy_lib PUBLIC "${PROJECT_SOURCE_DIR}/include")
+
+add_executable(skippy src/main.cpp)
+
+target_compile_options(skippy PRIVATE -Wall -Wextra -pedantic)
+
 add_subdirectory(glfw)
-target_link_libraries(skippy glfw)
+
+target_link_libraries(skippy_lib PUBLIC glfw)
+
+target_link_libraries(skippy PRIVATE skippy_lib)
 
