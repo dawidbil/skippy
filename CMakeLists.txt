@@ -8,6 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_library(
 	skippy_lib STATIC
 	src/glad.c
+	src/shader.cpp
 )
 
 target_include_directories(skippy_lib PUBLIC "${PROJECT_SOURCE_DIR}/include")
