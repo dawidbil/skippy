@@ -29,14 +29,6 @@ int main() {
       0, 1, 3, 1, 2, 3,
   };
 
-  const auto resources_path =
-      std::filesystem::path(__FILE__).parent_path().parent_path().append("res");
-  const auto vertex_shader_path = resources_path / "shader.vs";
-  const auto fragment_shader_path = resources_path / "shader.fs";
-
-  Shader shader(vertex_shader_path.c_str(), fragment_shader_path.c_str());
-  return 0;
-
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -54,6 +46,13 @@ int main() {
     std::cout << "Failed to initialize GLAD" << std::endl;
     return -1;
   }
+
+  const auto resources_path =
+      std::filesystem::path(__FILE__).parent_path().parent_path().append("res");
+  const auto vertex_shader_path = resources_path / "shader.vs";
+  const auto fragment_shader_path = resources_path / "shader.fs";
+
+  Shader shader(vertex_shader_path.string().c_str(), fragment_shader_path.string().c_str());
 
   glViewport(0, 0, 800, 600);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
