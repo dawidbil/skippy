@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <iostream>
+#include <cmath>
 
 #include <glad/glad.h>
 // glad must be included before glfw
@@ -19,10 +20,10 @@ void processInput(GLFWwindow *window) {
 
 int main() {
   float vertices[] = {
-      0.5f,  0.5f,  0.0f, // top right
-      0.5f,  -0.5f, 0.0f, // bottom right
-      -0.5f, -0.5f, 0.0f, // bottom left
-      -0.5f, 0.5f,  0.0f, // top left
+      0.5f,  0.5f,  0.0f, 1.0f,  0.36f, 0.32f, // top right
+      0.5f,  -0.5f, 0.0f, 0.32f, 0.32f, 1.0f,  // bottom right
+      -0.5f, -0.5f, 0.0f, 0.17f, 0.54f, 0.17f, // bottom left
+      -0.5f, 0.5f,  0.0f, 0.9f,  0.9f,  0.9f,  // top left
   };
 
   unsigned int indices[] = {
@@ -57,20 +58,24 @@ int main() {
   glViewport(0, 0, 800, 600);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-  unsigned int VAO;
-  glGenVertexArrays(1, &VAO);
-  glBindVertexArray(VAO);
+  unsigned int vertex_array_object;
+  glGenVertexArrays(1, &vertex_array_object);
+  glBindVertexArray(vertex_array_object);
 
-  unsigned int VBO;
-  glGenBuffers(1, &VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  unsigned int vertex_buffer_objects;
+  glGenBuffers(1, &vertex_buffer_objects);
+  glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_objects);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+  // position attribute
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
+  // color attribute
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
 
-  unsigned int EBO;
-  glGenBuffers(1, &EBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  unsigned int element_buffer_objects;
+  glGenBuffers(1, &element_buffer_objects);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_objects);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
                GL_STATIC_DRAW);
 
@@ -83,7 +88,10 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     shader.use();
-    glBindVertexArray(VAO);
+    float timeValue = glfwGetTime();
+    float zPos = sin(timeValue) * 0.5f;
+    shader.set_float("zPos", zPos);
+    glBindVertexArray(vertex_array_object);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 
