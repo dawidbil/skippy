@@ -15,7 +15,11 @@ target_include_directories(skippy_lib PUBLIC "${PROJECT_SOURCE_DIR}/include")
 
 add_executable(skippy src/main.cpp)
 
-target_compile_options(skippy PRIVATE -Wall -Wextra -pedantic)
+if (MSVC)
+	target_compile_options(skippy PRIVATE /W3)
+else ()
+	target_compile_options(skippy PRIVATE -Wall -Wextra -pedantic)
+endif()
 
 add_subdirectory(glfw)
 

@@ -49,18 +49,13 @@ std::string Shader::read_file(const char *path) {
 
 unsigned int Shader::compile_shader(const std::string source, unsigned int type) {
   const char *c_source = source.c_str();
-  std::cout << c_source << std::endl;
   unsigned int shader = glCreateShader(type);
-  std::cout << "Shader compiled successfully" << std::endl;
   glShaderSource(shader, 1, &c_source, NULL);
-  std::cout << "Shader compiled successfully" << std::endl;
   glCompileShader(shader);
-  std::cout << "Shader compiled successfully" << std::endl;
 
   int success;
   char infoLog[512];
   glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-  std::cout << "Shader compiled successfully" << std::endl;
   if (!success) {
     glGetShaderInfoLog(shader, 512, NULL, infoLog);
     std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
