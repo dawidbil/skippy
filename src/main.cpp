@@ -91,9 +91,9 @@ int main() {
 
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-  unsigned int texture;
-  glGenTextures(1, &texture);
-  glBindTexture(GL_TEXTURE_2D, texture);
+  unsigned int texture0;
+  glGenTextures(1, &texture0);
+  glBindTexture(GL_TEXTURE_2D, texture0);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -104,6 +104,7 @@ int main() {
   // glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
   int width, height, nrChannels;
+  stbi_set_flip_vertically_on_load(true);
   unsigned char *data =
       stbi_load((textures_path / "container.jpg").string().c_str(), &width,
                 &height, &nrChannels, 0);
@@ -118,18 +119,51 @@ int main() {
 
   stbi_image_free(data);
 
+  unsigned int texture1;
+  glGenTextures(1, &texture1);
+  glBindTexture(GL_TEXTURE_2D, texture1);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  // float borderColor[] = {1.0f, 1.0f, 0.0f, 1.0f};
+  // glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+  data = stbi_load((textures_path / "awesomeface.png").string().c_str(), &width,
+                   &height, &nrChannels, 0);
+
+  if (data) {
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+  } else {
+    std::cout << "Failed to load texture" << std::endl;
+  }
+
+  stbi_image_free(data);
+
+  shader.use();
+  shader.set_int("texture0", 0);
+  shader.set_int("texture1", 1);
+
   while (!glfwWindowShouldClose(window)) {
     processInput(window);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture0);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+
     shader.use();
     float timeValue = glfwGetTime();
-    float offset = 0.0f;
-    // float offset = sin(timeValue) * 0.5f;
+    // float offset = 0.0f;
+    float offset = sin(timeValue) * 0.5f;
     shader.set_float("offset", offset);
-    glBindTexture(GL_TEXTURE_2D, texture);
     glBindVertexArray(vertex_array_object);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
