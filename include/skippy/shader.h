@@ -10,6 +10,7 @@ public:
   ~Shader();
   void use();
   void set_float(const std::string &name, float value) const;
+  void set_int(const std::string &name, int value) const;
 
 private:
   std::string read_file(const char *path);

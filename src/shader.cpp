@@ -31,6 +31,10 @@ void Shader::set_float(const std::string &name, float value) const {
   glUniform1f(glGetUniformLocation(mID, name.c_str()), value);
 }
 
+void Shader::set_int(const std::string &name, int value) const {
+  glUniform1i(glGetUniformLocation(mID, name.c_str()), value);
+}
+
 std::string Shader::read_file(const char *path) {
   std::string file_content;
   std::ifstream file_stream;
